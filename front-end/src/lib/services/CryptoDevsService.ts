@@ -108,11 +108,24 @@ export async function startPresale() {
     }
 }
 
-export async function isPresaleRunning(): Promise<boolean> {
+export async function isPresaleStarted(): Promise<boolean> {
     let result:boolean;
+
     try {
         const cryptoDevsContract = getContract();
-        result = await cryptoDevsContract.isPresaleRunning();
+        result = await cryptoDevsContract.isPresaleStarted();
+    } catch (error) {
+        throw error;
+    }
+    return result;
+}
+
+export async function isPresaleEnded(): Promise<boolean> {
+    let result:boolean;
+
+    try {
+        const cryptoDevsContract = getContract();
+        result = await cryptoDevsContract.isPresaleEnded();
     } catch (error) {
         throw error;
     }
@@ -139,9 +152,29 @@ export async function postsaleMint() {
 
 export async function getTotalTokenIdsMinted(): Promise<number> {
     let result:number;
+
     try {
         const cryptoDevsContract = getContract();
         result = await cryptoDevsContract.getTotalTokenIdsMinted();
+    } catch (error) {
+        throw error;
+    }
+    return result;
+}
+
+export async function getOwner() {
+    let result:boolean = false;
+
+    try {
+        const cryptoDevsContract = getContract();
+        const contractOwnerAddress: string = await cryptoDevsContract.owner();
+        const signer = getSigner();
+        let signerAddress = await signer.getAddress();
+
+        if (contractOwnerAddress.toLowerCase() === signerAddress.toLowerCase()) {
+            result = true;
+        }
+
     } catch (error) {
         throw error;
     }
