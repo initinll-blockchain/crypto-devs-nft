@@ -7,8 +7,10 @@ import "./IWhitelist.sol";
 
 interface ICryptoDevs {
     function startPresale() external;
+    function isPresaleRunning() external view returns (bool);
     function presaleMint() external payable;
     function postsaleMint() external payable;
+    function getTotalTokenIdsMinted() external view returns (uint256);
     function setPaused(bool isPaused) external;
     function withdraw() external;
 }
@@ -54,10 +56,22 @@ contract CryptoDevs is ICryptoDevs, ERC721Enumerable, Ownable {
     }
 
     /**
+    * @dev isPresaleRunning indicates if presale is running or ended
+    */
+    function isPresaleRunning() public view returns (bool) {
+        if (presaleStarted && block.timestamp < presaleEndDate) {
+            return true;
+        } else if (presaleStarted && block.timestamp >= presaleEndDate) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
     * @dev presaleMint allows a user to mint one NFT per transaction during the presale.
     */
     function presaleMint() public payable onlyWhenNotPaused {
-        require(presaleStarted && block.timestamp < presaleEndDate, "Presale is not running");
+        require(isPresaleRunning(), "Presale is not running");
         require(whitelistContract.whitelistedAddresses(msg.sender), "You are not whitelisted");
         require(totalTokenIdsMinted < maxTokenIdsSupply, "Exceeded maximum Crypto Devs supply");
         require(msg.value >= mintPrice, "Ether sent is not correct");
@@ -71,13 +85,20 @@ contract CryptoDevs is ICryptoDevs, ERC721Enumerable, Ownable {
     * @dev mint allows a user to mint 1 NFT per transaction after the presale has ended.
     */
     function postsaleMint() public payable onlyWhenNotPaused {
-        require(presaleStarted && block.timestamp >= presaleEndDate, "Presale has not ended yet");
+        require(!isPresaleRunning(), "Presale has not ended yet");
         require(totalTokenIdsMinted < maxTokenIdsSupply, "Exceeded maximum Crypto Devs supply");
         require(msg.value >= mintPrice, "Ether sent is not correct");
 
         totalTokenIdsMinted += 1;
 
         ERC721._safeMint(msg.sender, totalTokenIdsMinted);
+    }
+
+    /**
+    * @dev getTotalTokenIdsMinted give total NFT Ids minted count
+    */
+    function getTotalTokenIdsMinted() external view returns (uint256) {
+        return totalTokenIdsMinted;
     }
 
     /**
