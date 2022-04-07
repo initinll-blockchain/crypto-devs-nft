@@ -14,7 +14,8 @@
 		postsaleMint,
 		getTotalTokenIdsMinted,
 		isPresaleStarted,
-		isPresaleEnded
+		isPresaleEnded,
+		getOwner
 	} from '$lib/services/CryptoDevsService';
 
 	let loading: boolean;
@@ -29,6 +30,7 @@
 		loading = true;
 		try {
 			account = await checkIfWalletIsConnected();
+			isOwner = await getOwner();
 			await switchN();
 			presaleStarted = await isPresaleStarted();
 			presaleEnded = await isPresaleEnded();
@@ -65,6 +67,7 @@
 		loading = true;
 		try {
 			account = await connectWallet();
+			isOwner = await getOwner();
 			await switchN();
 			presaleStarted = await isPresaleStarted();
 			presaleEnded = await isPresaleEnded();
