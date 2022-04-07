@@ -1,19 +1,18 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { METADATA_URL, WHITELIST_CONTRACT_ADDRESS } from "../constants/constant";
 
-describe("Greeter", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+describe("CryptoDevs", async function () {
+  it("Only onwer could start presale", async function(){
+    const [owner, randomPerson] = await ethers.getSigners();
+    const CryptoDevs = await ethers.getContractFactory("CryptoDevs");
+    const cryptoDevs = await CryptoDevs.deploy(
+        METADATA_URL,
+        WHITELIST_CONTRACT_ADDRESS
+    );
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+    await cryptoDevs.deployed();
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
-  });
+    await cryptoDevs.connect(randomPerson).startPresale();
+  })
 });
