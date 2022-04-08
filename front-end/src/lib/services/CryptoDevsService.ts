@@ -135,7 +135,10 @@ export async function isPresaleEnded(): Promise<boolean> {
 export async function presaleMint() {
     try {
         const cryptoDevsContract = getContract();
-        await cryptoDevsContract.presaleMint();
+        await cryptoDevsContract.presaleMint(
+            {
+                value: ethers.utils.parseEther('0.01')
+            });
     } catch (error) {
         throw error;
     }
@@ -144,7 +147,10 @@ export async function presaleMint() {
 export async function postsaleMint() {
     try {
         const cryptoDevsContract = getContract();
-        await cryptoDevsContract.postsaleMint();
+        await cryptoDevsContract.postsaleMint(
+            {
+                value: ethers.utils.parseEther('0.01')
+            });
     } catch (error) {
         throw error;
     }
