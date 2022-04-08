@@ -94,9 +94,11 @@
 		<div>
 			<h1 class="title">Welcome to Crypto Devs!</h1>
 			<div class="description">Its an NFT collection for developers in Crypto.</div>
-			<div class="description">
-				{tokenIdsMinted}/20 have been minted
-			</div>
+			{#if account}
+				<div class="description">
+					{tokenIdsMinted}/20 have been minted
+				</div>
+			{/if}			
 			{#if account}
 				{#if loading}
 					<button class="button">Loading...</button>
@@ -104,7 +106,7 @@
 					<button class="button" on:click={startPresale}> Start Presale! </button>
 				{:else if !presaleStarted}
 					<div>
-						<div class="description">Presale hasnt started!</div>
+						<div class="description">Presale hasn't started!</div>
 					</div>
 				{:else if presaleStarted && !presaleEnded}
 					<div>
